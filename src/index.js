@@ -23,7 +23,7 @@ function onSearch(e){
 
 
     fetchCountries(inputValue).then(country => {
-        console.log(country);
+
         if (country.length > 10) {
         return Notiflix.Notify.info('Too many matches found. Please enter a more specific name.');
         }if(country.length>=2 && country.length<=10){
@@ -35,29 +35,29 @@ function onSearch(e){
         
     }
     )
-    .catch(error => {
+        .catch(error => {
+        
         return Notiflix.Notify.failure("Oops, there is no country with that name");
     });
 }
 
 function arrayOfCountries(country) {
-const arraOfCountries = country.map(country =>
+    const arraOfCountries = country.map(({ flags, name }) =>
         `<li class="country-item">
-            <img  src="${country.flags.svg}" 
-            alt="${country.name.official}" 
+            <img  src="${flags.svg}" 
+            alt="${name.official}" 
             class="country-img"
             width="30"
             height="25">
             
-            <p class="country-list-text">${country.name.common}</p>
+            <p class="country-list-text">${name.common}</p>
         </li>` 
         ).join("");
     refs.countryList.innerHTML = arraOfCountries;   
-    console.log(country);
+    
 }
 function cardOfCountry(country) {
-    const {flags,name,capital,population,languages} = country;
-    const card = country.map(country =>
+    const card = country.map(({flags,name,capital,population,languages}) =>
         `
       <h2 class="info-name">
         <img class="info-img" 
@@ -70,7 +70,7 @@ function cardOfCountry(country) {
       </h2>
       <p class="info-capital"><b>Capital:</b>${capital}</p>
       <p class="info-opulation"><b>Population:</b>${population}</p>
-      <p class="info-languages"><b>Languages:</b>${languages}</p>
+      <p class="info-languages"><b>Languages:</b>${Object.values(languages)}</p>
         `).join('');
     refs.countryInfo.innerHTML = card;
 
