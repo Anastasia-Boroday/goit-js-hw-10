@@ -9,11 +9,17 @@ const refs = {
     countryList: document.querySelector('.country-list'),
     countryInfo:document.querySelector('.country-info'),
 }
-refs.input.addEventListener('input', onSearch);
+refs.input.addEventListener('input', debounce(onSearch,DEBOUNCE_DELAY));
 
 function onSearch(e){
     e.preventDefault();
-    const inputValue = e.currentTarget.value.trim();
+    const inputValue = e.target.value.trim();
+    
+    clearInfo();
+
+    if (inputValue === '') {
+        return;
+    };
 
 
     fetchCountries(inputValue).then(country => {
@@ -21,16 +27,16 @@ function onSearch(e){
         if (country.length > 10) {
         return Notiflix.Notify.info('Too many matches found. Please enter a more specific name.');
         }if(country.length>=2 && country.length<=10){
-             return arrayOfCountries(country);
-        }if(country.length==1){
-            return Notify.failure("Oops, there is no country with that name");
+            return arrayOfCountries(country);
+        }if(country.length===1){
+            return cardOfCountry(country);
         }
 
         
     }
     )
     .catch(error => {
-        console.log(error);
+        return Notiflix.Notify.failure("Oops, there is no country with that name");
     });
 }
 
@@ -50,20 +56,28 @@ const arraOfCountries = country.map(country =>
     console.log(country);
 }
 function cardOfCountry(country) {
-    // const {flags,name,capital,population,languages} = country;
+    const {flags,name,capital,population,languages} = country;
     const card = country.map(country =>
         `
       <h2 class="info-name">
         <img class="info-img" 
-        src="${country.flags.svg}" 
-        alt=" ${country.name.common}">
-        ${country.name.common}
+        src="${flags.svg}" 
+        alt=" ${name.common}"
+        width="40"
+        // height="35"
+        >
+        ${name.common}
       </h2>
-      <p class="info-capital"><b>Capital:</b>${country.capital}</p>
-      <p class="info-opulation"><b>Population:</b>${country.population}</p>
-      <p class="info-languages"><b>Languages:</b>${country.languages}</p>
+      <p class="info-capital"><b>Capital:</b>${capital}</p>
+      <p class="info-opulation"><b>Population:</b>${population}</p>
+      <p class="info-languages"><b>Languages:</b>${languages}</p>
         `).join('');
     refs.countryInfo.innerHTML = card;
 
 }
 
+
+function clearInfo() {
+    refs.countryInfo.innerHTML = '';
+    refs.countryList.innerHTML = '';
+};
